@@ -53,19 +53,20 @@ class Bayes(object):
     '''
 
     def test(self, test_data):
+        if len(self.label_prob) * len(self.label_vector) == 0:
+            raise ValueError("需要先进行训练")
         result = dict()
         for label, vector in self.label_vector.items():
             # 当前类别的概率
             this_label_prob = self.label_prob[label]
             # 当前类别的特征向量
             this_label_vector = vector
-            # 当前类别特征向量的个数
-            label_vector_count = len(vector)
             # 转置特征向量
             tran_vector = npy.array(this_label_vector).T
 
             p = 1
             for index, td in enumerate(test_data):
-                p *= list(tran_vector[index]).count(td) / label_vector_count
+                plist = list(tran_vector[index])
+                p *= plist.count(td) / len(plist)
             result[label] = p * this_label_prob
         return sorted(result, key=lambda x: result[x], reverse=True)[0]
